@@ -4,7 +4,7 @@ import csv
 
 # Setup ScrapingBee
 api_key = 'IDUZ5WRYJU8NI62W8VMARD1Z3SLYAWYNHFJSWTR9M7CT1GIX052AFKEL1JRNUAQPD7JESV4XJBD4HRGJ'
-url = 'https://blogger.ameba.jp/genres/diet/topics'
+url = 'https://blogger.ameba.jp/genres/frugality/topics'
 
 response = requests.get(
     'https://app.scrapingbee.com/api/v1/',
@@ -21,7 +21,7 @@ soup = BeautifulSoup(response.text, 'html.parser')
 job_posts = soup.find_all('li', class_='p-topics__item')
 
 # Prepare to write to a CSV file
-with open('diet.csv', 'w', newline='', encoding='utf-8') as file:
+with open('frugality.csv', 'w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file)
     # Write the header
     writer.writerow(["URL", "Title", "User"])
