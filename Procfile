@@ -1,1 +1,1 @@
-worker: python3 diet.py
+worker: python3 dietOP.py
