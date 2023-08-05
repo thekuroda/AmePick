@@ -11,7 +11,8 @@ creds_json = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 creds_dict = json.loads(creds_json)
 
 # Use the service account credentials directly
-creds = Credentials.from_service_account_info(creds_dict)
+creds = Credentials.from_service_account_info(creds_dict, scopes=[
+                                              "https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"])
 
 # Create a client to interact with Google Sheets
 client = gspread.authorize(creds)
