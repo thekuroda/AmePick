@@ -9,18 +9,16 @@ import sys
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-
 # Get the credentials from the environment variable and convert to a dictionary
 google_credentials = json.loads(os.environ.get('GOOGLE_CREDENTIALS'))
 
 # Use the google_credentials dictionary wherever you were using the .json file
 
-
 # Set up the Google Sheets client
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-creds = ServiceAccountCredentials.from_json_keyfile_name(
-    'path_to_your_downloaded_credentials.json', scope)
+creds_dict = json.loads(os.environ.get('GOOGLE_CREDENTIALS'))
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
 # Open the Google Sheet using its name
@@ -29,7 +27,6 @@ sheet = client.open("Ame-Daily Diet").sheet1
 # Append data
 row = ["URL", "Title", "User"]  # Replace with your data
 sheet.append_row(row)
-
 
 creds_json = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 creds_dict = json.loads(creds_json)
@@ -78,19 +75,19 @@ try:
     # Find all the job posts
     job_posts = soup.find_all('li', class_='p-topics__item')
 
-    # Prepare to write to a CSV file
-    with open('diet.csv', 'w', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        # Write the header
-        writer.writerow(["URL", "Title", "User"])
+    # Open the Google Sheet using its name
+    sheet = client.open("Ame-Daily Diet").sheet1
 
-        # Write the information of each job post
-        for job_post in job_posts:
-            url = job_post.find(
-                'a', class_='p-topics__anchor u-clearfix')['href']
-            title = job_post.find('p', class_='p-topics__title').text
-            user = job_post.find('span', class_='p-topics__userName').text
-            writer.writerow([url, title, user])
+    # Write the header to the Google Sheet (only if it's a fresh sheet)
+    if not sheet.row_values(1):
+        sheet.append_row(["URL", "Title", "User"])
+
+    # Write the information of each job post to Google Sheet
+    for job_post in job_posts:
+        url = job_post.find('a', class_='p-topics__anchor u-clearfix')['href']
+        title = job_post.find('p', class_='p-topics__title').text
+        user = job_post.find('span', class_='p-topics__userName').text
+        sheet.append_row([url, title, user])
 
 except requests.RequestException as e:
     print(f"Network error: {e}")
