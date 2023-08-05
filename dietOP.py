@@ -33,8 +33,8 @@ sheet = client.open("Ame-Daily Diet").sheet1
 # Append data
 row = ["URL", "Title", "User"]  # Replace with your data
 sheet.append_row(row)
-
 creds_json = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+
 creds_dict = json.loads(creds_json)
 creds = Credentials.from_authorized_user_info(creds_dict)
 
