@@ -9,6 +9,12 @@ import sys
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+
+env_value = os.environ.get('GOOGLE_CREDENTIALS')
+print(f"GOOGLE_CREDENTIALS value: {env_value}")
+google_credentials = json.loads(env_value)
+
+
 # Get the credentials from the environment variable and convert to a dictionary
 google_credentials = json.loads(os.environ.get('GOOGLE_CREDENTIALS'))
 
