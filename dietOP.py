@@ -1,49 +1,27 @@
+import gspread
+import sys
 import requests
 from bs4 import BeautifulSoup
-import csv
-from google.cloud import secretmanager
 import os
 import json
-from google.oauth2.credentials import Credentials
-import sys
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
-env_value = os.environ.get('GOOGLE_CREDENTIALS')
-print(f"GOOGLE_CREDENTIALS value: {env_value}")
+from google.oauth2.service_account import Credentials
 
 # Load the credentials from the environment variable
 creds_json = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
 creds_dict = json.loads(creds_json)
 
-# Define the scope
-scope = [
-    'https://spreadsheets.google.com/feeds',
-    'https://www.googleapis.com/auth/spreadsheets',
-    'https://www.googleapis.com/auth/drive'
-]
+# Use the service account credentials directly
+creds = Credentials.from_service_account_info(creds_dict)
 
-# Use ServiceAccountCredentials for authentication
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+# Create a client to interact with Google Sheets
 client = gspread.authorize(creds)
 
 # Open the Google Sheet using its name
 sheet = client.open("Ame-Daily Diet").sheet1
 
-# Append data
-row = ["URL", "Title", "User"]  # Replace with your data
-sheet.append_row(row)
-creds_json = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
-
-creds_dict = json.loads(creds_json)
-creds = Credentials.from_authorized_user_info(creds_dict)
-
 
 def access_secret_version(project_id, secret_id, version_id):
-    """
-    Access the payload for the given secret version if one exists. The version
-    can be a version number as a string (e.g. "5") or an alias (e.g. "latest").
-    """
+    from google.cloud import secretmanager
     client = secretmanager.SecretManagerServiceClient(credentials=creds)
 
     # Build the resource name of the secret version.
@@ -80,9 +58,6 @@ try:
 
     # Find all the job posts
     job_posts = soup.find_all('li', class_='p-topics__item')
-
-    # Open the Google Sheet using its name
-    sheet = client.open("Ame-Daily Diet").sheet1
 
     # Write the header to the Google Sheet (only if it's a fresh sheet)
     if not sheet.row_values(1):
