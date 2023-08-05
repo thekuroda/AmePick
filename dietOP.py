@@ -9,21 +9,21 @@ import sys
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-
 env_value = os.environ.get('GOOGLE_CREDENTIALS')
 print(f"GOOGLE_CREDENTIALS value: {env_value}")
-google_credentials = json.loads(env_value)
 
+# Load the credentials from the environment variable
+creds_json = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+creds_dict = json.loads(creds_json)
 
-# Get the credentials from the environment variable and convert to a dictionary
-google_credentials = json.loads(os.environ.get('GOOGLE_CREDENTIALS'))
+# Define the scope
+scope = [
+    'https://spreadsheets.google.com/feeds',
+    'https://www.googleapis.com/auth/spreadsheets',
+    'https://www.googleapis.com/auth/drive'
+]
 
-# Use the google_credentials dictionary wherever you were using the .json file
-
-# Set up the Google Sheets client
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
-         "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
-creds_dict = json.loads(os.environ.get('GOOGLE_CREDENTIALS'))
+# Use ServiceAccountCredentials for authentication
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
